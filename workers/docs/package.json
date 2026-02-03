@@ -1,0 +1,29 @@
+{
+	"name": "docs",
+	"type": "module",
+	"version": "0.0.1",
+	"scripts": {
+		"dev": "astro dev",
+		"start": "astro dev",
+		"build": "astro build",
+		"preview": "astro build && wrangler dev",
+		"astro": "astro",
+		"deploy": "astro build && wrangler deploy",
+		"cf-typegen": "wrangler types"
+	},
+	"dependencies": {
+		"@astrojs/cloudflare": "^12.6.12",
+		"@astrojs/starlight": "^0.37.6",
+		"astro": "^5.6.1",
+		"sharp": "^0.34.2"
+	},
+	"devDependencies": {
+		"@types/node": "^25.2.0",
+		"wrangler": "^4.62.0"
+	},
+	"author": "Charl Kruger",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/charl-kruger/cf-agents.git"
+	}
+}

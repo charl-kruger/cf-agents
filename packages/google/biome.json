@@ -1,0 +1,37 @@
+{
+    "$schema": "https://biomejs.dev/schemas/2.3.10/schema.json",
+    "assist": {
+        "actions": {
+            "source": {
+                "useSortedKeys": "off"
+            }
+        },
+        "enabled": true
+    },
+    "files": {
+        "ignoreUnknown": false,
+        "includes": [
+            "src/**",
+            "!node_modules",
+            "!dist"
+        ]
+    },
+    "formatter": {
+        "enabled": false,
+        "indentStyle": "space"
+    },
+    "javascript": {
+        "formatter": {
+            "quoteStyle": "double"
+        }
+    },
+    "linter": {
+        "enabled": true,
+        "rules": {
+            "recommended": true,
+            "style": {
+                "noNonNullAssertion": "off"
+            }
+        }
+    }
+}
