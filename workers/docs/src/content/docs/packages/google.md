@@ -16,8 +16,8 @@ The `@cf-agents/google` package provides a powerful set of tools to let your AI 
 
 ```bash
 npm install @cf-agents/google
-# or in a monorepo
-pnpm add @cf-agents/google --filter your-worker
+# or
+pnpm add @cf-agents/google
 ```
 
 ## Configuration

@@ -9,22 +9,16 @@ While Cloudflare provides the core AI agent platform, `@cf-agents` gives you the
 
 ## Pre-requisites
 
-- A Cloudflare Workers project (we recommend `npm create cloudflare@latest -- --template cloudflare/agents-starter`)
-- `pnpm` workspace setup (if integrating multiple packages locally)
+- A Cloudflare Workers project (we recommend `npm create cloudflare@latest`)
 
 ## Installation
 
-Add the packages you need to your `package.json`. If you are working in a monorepo structure with these packages locally:
+Install the packages you need using your preferred package manager:
 
-```json
-// package.json
-{
-  "dependencies": {
-    "@cf-agents/google": "workspace:*",
-    "@cf-agents/discord": "workspace:*",
-    "@cf-agents/slack": "workspace:*"
-  }
-}
+```bash
+npm install @cf-agents/google @cf-agents/discord
+# or
+pnpm add @cf-agents/google @cf-agents/discord
 ```
 
 ## Basic Usage
