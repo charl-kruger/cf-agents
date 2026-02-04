@@ -82,7 +82,8 @@ export default {
     const skillsTools = createSkillsTools({
       AI: env.AI,
       FILES: env.FILES,
-      VECTOR_INDEX: env.VECTOR_INDEX
+      VECTOR_INDEX: env.VECTOR_INDEX,
+      githubToken: env.GITHUB_TOKEN // Optional for private repos
     });
 
     // Provide these tools to your agent...
