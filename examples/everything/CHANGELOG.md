@@ -1,5 +1,12 @@
 # cloudflare-agent-starter
 
+## 1.0.2
+
+### Patch Changes
+
+- Updated dependencies [9d72639]
+  - @cf-agents/discord@0.2.0
+
 ## 1.0.1
 
 ### Patch Changes
