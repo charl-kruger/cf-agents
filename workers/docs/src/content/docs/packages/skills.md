@@ -11,6 +11,27 @@ The `@cf-agents/skills` package allows your agent to "learn" new capabilities at
 - **Recursive Syncing**: Downloads all source files from a skill's directory directly to Cloudflare **R2**.
 - **Embedded Search**: Automatically indexes skill descriptions in **Vectorize** using Workers AI for instant retrieval.
 
+## Architecture: Why Progressive Disclosure?
+
+The `@cf-agents/skills` package implements a **Two-Tier Discovery** model designed for high-precision agents:
+
+1.  **Tier 1: Global Manifest (Awareness)**:
+    We maintain a lightweight `manifest.json` in R2. This gives the agent a complete "catalog" of installed skills (names + short summaries) in the system prompt. Unlike pure vector search, the agent never has to "guess" if it has a capability.
+    
+2.  **Tier 2: On-Demand Loading (Precision)**:
+    When the agent identifies a relevant skill, it calls `loadSkill` to retrieve the full `SKILL.md` instructions. This ensures the environment stays lean, saving tokens and improving accuracy by avoiding context "noise."
+
+### Comparison
+
+| Feature | Pure Vector Search | Progressive Disclosure |
+| :--- | :--- | :--- |
+| **Awareness** | Blind (requires query) | Conscious (sees catalog) |
+| **Token Cost** | Lower (search only) | Minimal (metadata only) |
+| **Logic Depth** | Variable | High (loads full manual) |
+| **Scale** | Unlimited | Optimized (10-100+ skills) |
+
+---
+
 ## Installation
 
 ```bash

@@ -63,6 +63,20 @@ Once added to your agent's toolset, the LLM can:
 -   `searchSkills({ query? })`: Find documentation or specific logic in already installed skills.
 -   `deleteSkill({ skillName })`: Uninstall/remove a capability.
 
+## Architecture: Progressive Disclosure
+
+This package follows the **Progressive Disclosure** pattern for skill discovery, similar to industry leaders like OpenCode and Cursor.
+
+### Why this method?
+
+We use a two-tier approach (Global Manifest + On-Demand Loading) instead of relying solely on pure vector search:
+
+1.  **Eliminating "Agent Blindness"**: In pure vector systems, an agent must guess a search query before it even knows what skills exist. By maintaining a global `manifest.json`, the agent is presented with a "menu" of capabilities from the start.
+2.  **Token Efficiency**: Loading the full implementation logic for every skill into every request is expensive and noisy. This architecture allows the agent to see a 1-sentence summary, decide if it's relevant, and only then use `loadSkill` to "read the manual."
+3.  **Precision & Scalability**: Small-to-medium skill sets (10-50) work significantly better when the LLM can see the complete catalog. For larger sets, the integrated **Vectorize** layer remains available for deep documentation retrieval.
+
+---
+
 ## Creating a Skill
 
 A skill is simply a folder in a GitHub repository containing a **`SKILL.md`** file.
