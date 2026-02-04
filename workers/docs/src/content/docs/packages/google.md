@@ -32,14 +32,23 @@ pnpm add @cf-agents/google
 
 ### Environment Variables
 
-Add these to your `wrangler.toml` or `.dev.vars`:
+For local development, create a `.dev.vars` file in your root directory:
 
-```toml
-[vars]
-GOOGLE_CLIENT_ID = "your-client-id"
-GOOGLE_CLIENT_SECRET = "your-client-secret"
-GOOGLE_REDIRECT_URI = "https://your-worker.workers.dev/auth/google/callback"
+```env
+GOOGLE_CLIENT_ID="your-client-id"
+GOOGLE_CLIENT_SECRET="your-client-secret"
+GOOGLE_REDIRECT_URI="https://your-worker.workers.dev/auth/google/callback"
 ```
+
+For production, use the Wrangler CLI to set your secrets securely:
+
+```bash
+npx wrangler secret put GOOGLE_CLIENT_ID
+npx wrangler secret put GOOGLE_CLIENT_SECRET
+```
+
+> [!CAUTION] 
+> Never store sensitive credentials directly in your `wrangler.jsonc` file. Use `.dev.vars` for local dev and Wrangler secrets for production.
 
 ## Usage
 

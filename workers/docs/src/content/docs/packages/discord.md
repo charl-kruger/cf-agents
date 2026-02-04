@@ -31,13 +31,23 @@ Follow these steps to get your Discord integration running.
 5.  **Invite the Bot**: Under `OAuth2 > URL Generator`, select `bot` + `Administrator` (or specific permissions like `Send Messages`, `Read Message History`) and use the generated URL to add the bot to your server.
 
 ### 2. Set Environment Variables
-Add the credentials to your `wrangler.toml` or `.dev.vars`:
 
-```toml
-[vars]
-DISCORD_TOKEN = "your_bot_token"
-DISCORD_PUBLIC_KEY = "your_public_key"
+For local development, create a `.dev.vars` file in your root directory:
+
+```env
+DISCORD_TOKEN="your_bot_token"
+DISCORD_PUBLIC_KEY="your_public_key"
 ```
+
+For production, use the Wrangler CLI to set your secrets securely:
+
+```bash
+npx wrangler secret put DISCORD_TOKEN
+npx wrangler secret put DISCORD_PUBLIC_KEY
+```
+
+> [!CAUTION] 
+> Never store sensitive tokens directly in your `wrangler.jsonc` file as it is often checked into version control.
 
 ## Usage
 
