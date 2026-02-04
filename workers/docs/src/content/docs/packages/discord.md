@@ -31,13 +31,23 @@ import { createDiscordTools } from "@cf-agents/discord";
 const discordTools = createDiscordTools({
   getToken: async () => ({
     token: process.env.DISCORD_TOKEN
-  })
+  }),
+  config: {
+    channelId: process.env.DISCORD_CHANNEL_ID // Optional default channel
+  }
 });
 ```
+
+### Single Channel Mode
+
+You can configure the package to always use a specific Discord channel. When `channelId` is provided in the `config` object during initialization, it becomes optional for the agent in all tool calls.
+
+- If the agent provides a `channelId`, it will override the default.
+- If neither is provided, an error will be thrown.
 
 ### Tool Definitions
 
 The package exports AI SDK compatible tools. Once added to `streamText`, the LLM can call:
 
-*   `discord_send_message({ channelId, content })`
-*   `discord_read_history({ channelId, limit })`
+*   `discord_send_message({ channelId?, content })`
+*   `discord_read_history({ channelId?, limit })`

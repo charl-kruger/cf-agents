@@ -4,6 +4,9 @@ import type { DiscordToken, DiscordMessage } from "./types";
 
 interface ToolContext {
     getToken: () => Promise<DiscordToken>;
+    config?: {
+        channelId?: string;
+    };
 }
 
 const DISCORD_API_BASE = "https://discord.com/api/v10";
@@ -23,12 +26,17 @@ export const createDiscordTools = (context: ToolContext) => {
         discordChannelSend: tool({
             description: "Send a message to a Discord channel",
             parameters: z.object({
-                channelId: z.string().describe("The ID of the channel to send to"),
+                channelId: z.string().optional().describe("The ID of the channel to send to. Optional if a channel is pre-configured."),
                 content: z.string().describe("The message content"),
             }),
             execute: async ({ channelId, content }) => {
+                const targetChannelId = channelId ?? context.config?.channelId;
+                if (!targetChannelId) {
+                    throw new Error("No channelId provided and no default channel configured.");
+                }
+
                 const response = await getAuthenticatedFetch(
-                    `${DISCORD_API_BASE}/channels/${channelId}/messages`,
+                    `${DISCORD_API_BASE}/channels/${targetChannelId}/messages`,
                     {
                         method: "POST",
                         body: JSON.stringify({ content }),
@@ -47,13 +55,18 @@ export const createDiscordTools = (context: ToolContext) => {
         discordChannelHistory: tool({
             description: "Read recent messages from a Discord channel",
             parameters: z.object({
-                channelId: z.string().describe("The ID of the channel to read from"),
+                channelId: z.string().optional().describe("The ID of the channel to read from. Optional if a channel is pre-configured."),
                 limit: z.number().optional().default(10).describe("Number of messages to retrieve (max 100)"),
             }),
             execute: async ({ channelId, limit }) => {
+                const targetChannelId = channelId ?? context.config?.channelId;
+                if (!targetChannelId) {
+                    throw new Error("No channelId provided and no default channel configured.");
+                }
+
                 const params = new URLSearchParams({ limit: String(limit) });
                 const response = await getAuthenticatedFetch(
-                    `${DISCORD_API_BASE}/channels/${channelId}/messages?${params}`
+                    `${DISCORD_API_BASE}/channels/${targetChannelId}/messages?${params}`
                 );
 
                 if (!response.ok) {

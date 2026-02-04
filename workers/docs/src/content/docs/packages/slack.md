@@ -33,13 +33,23 @@ import { createSlackTools } from "@cf-agents/slack";
 const slackTools = createSlackTools({
   getToken: async () => ({
     token: process.env.SLACK_TOKEN
-  })
+  }),
+  config: {
+    channelId: process.env.SLACK_CHANNEL_ID // Optional default channel
+  }
 });
 ```
+
+### Single Channel Mode
+
+You can pin the Slack tools to a specific channel. By providing a `channelId` in the `config` during initialization, the agent no longer needs to specify a channel ID in its tool calls.
+
+- The agent can still override the default by providing an explicit `channelId`.
+- An error is thrown if no channel is specified or pre-configured.
 
 ### Tool Definitions
 
 The package exports AI SDK compatible tools:
 
-*   `slack_post_message({ channelId, text })`
-*   `slack_get_channel_history({ channelId, limit })`
+*   `slack_post_message({ channelId?, text })`
+*   `slack_get_channel_history({ channelId?, limit })`

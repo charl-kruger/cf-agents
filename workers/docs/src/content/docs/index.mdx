@@ -2,35 +2,43 @@
 title: '@cf-agents'
 description: The essential toolkit for extending Cloudflare Agents.
 template: splash
-hero:
-  tagline: Supercharge your Cloudflare Agents with drop-in integrations for Google, Discord, Slack, and more.
-  image:
-    file: ../../assets/houston.webp
-  actions:
-    - text: Get Started
-      link: /guides/getting-started
-      icon: right-arrow
-      variant: primary
-    - text: View on GitHub
-      link: https://github.com/charl-kruger/cf-agents
-      icon: external
+head:
+  - tag: style
+    content: |
+      /* Hide Starlight's default page title block on the homepage (we use a custom hero). */
+      main > .content-panel:first-child {
+        display: none;
+      }
 ---
 
-import { Card, CardGrid } from '@astrojs/starlight/components';
+import GlobeHero from '../../components/GlobeHero.tsx';
+import EcosystemShowcase from '../../components/EcosystemShowcase.tsx';
+
+<GlobeHero client:load />
+
+---
 
 ## The @cf-agents Ecosystem
 
-<CardGrid stagger>
-	<Card title="Easy Integration" icon="puzzle">
-		Drop-in packages that work seamlessly with `agents-starter`.
-	</Card>
-	<Card title="Type Safe" icon="seti:typescript">
-		Built with TypeScript for full autocompletion and safety.
-	</Card>
-	<Card title="Cloudflare Native" icon="rocket">
-		Optimized for Cloudflare Workers and Durable Objects.
-	</Card>
-	<Card title="AI Ready" icon="sparkle">
-		Designed to work out-of-the-box with the Vercel AI SDK.
-	</Card>
-</CardGrid>
+<EcosystemShowcase client:load />
+
+---
+
+## Quick Install
+
+```bash
+npm install @cf-agents/google @cf-agents/discord
+# or
+pnpm add @cf-agents/google @cf-agents/discord
+```
+
+---
+
+## Available Packages
+
+| Package | Description |
+|---------|-------------|
+| [`@cf-agents/google`](/packages/google) | Gmail, Calendar, and Sheets integration with OAuth 2.0 |
+| [`@cf-agents/discord`](/packages/discord) | Send messages and read channel history |
+| [`@cf-agents/slack`](/packages/slack) | Post messages and read conversations |
+| [`@cf-agents/telegram`](/packages/telegram) | Send messages to Telegram chats |

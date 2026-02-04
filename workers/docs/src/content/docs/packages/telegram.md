@@ -28,12 +28,21 @@ import { createTelegramTools } from "@cf-agents/telegram";
 const telegramTools = createTelegramTools({
   getToken: async () => ({
     token: process.env.TELEGRAM_TOKEN
-  })
+  }),
+  config: {
+    chatId: process.env.TELEGRAM_CHAT_ID // Optional default chat/channel
+  }
 });
 ```
+
+### Single Channel Mode
+
+Simplify agent interactions by pre-configuring a target chat or channel. When a `chatId` is set in the `config`, the agent can omit the chat ID in its tool requests.
+
+- Explicitly providing a `chatId` in a tool call will override the default.
 
 ### Tool Definitions
 
 The package exports AI SDK compatible tools:
 
-*   `telegram_send_message({ chatId, text })`
+*   `telegram_send_message({ chatId?, text })`

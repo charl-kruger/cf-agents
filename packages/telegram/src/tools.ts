@@ -4,6 +4,9 @@ import type { TelegramToken, TelegramMessage, TelegramResponse } from "./types";
 
 interface ToolContext {
     getToken: () => Promise<TelegramToken>;
+    config?: {
+        chatId?: string;
+    };
 }
 
 export const createTelegramTools = (context: ToolContext) => {
@@ -23,12 +26,17 @@ export const createTelegramTools = (context: ToolContext) => {
         telegramSendMessage: tool({
             description: "Send a message to a Telegram chat",
             parameters: z.object({
-                chatId: z.string().describe("The ID of the chat/channel to send to (e.g. @channelname or numeric ID)"),
+                chatId: z.string().optional().describe("The ID of the chat/channel to send to. Optional if a chat is pre-configured."),
                 text: z.string().describe("The text content of the message"),
             }),
             execute: async ({ chatId, text }) => {
+                const targetChatId = chatId ?? context.config?.chatId;
+                if (!targetChatId) {
+                    throw new Error("No chatId provided and no default chat configured.");
+                }
+
                 const response = await getAuthenticatedFetch("sendMessage", {
-                    chat_id: chatId,
+                    chat_id: targetChatId,
                     text: text,
                 });
 

@@ -17,9 +17,7 @@ A Cloudflare Agent integration package for Slack.
 }
 ```
 
-## Usage
-
-Initialize the tools with your Slack Bot Token (xoxb-...).
+Initialize the tools with your Slack Bot Token (xoxb-...) and an optional default channel.
 
 ```typescript
 import { createSlackTools } from "@cf-agents/slack";
@@ -27,6 +25,9 @@ import { createSlackTools } from "@cf-agents/slack";
 const slackTools = createSlackTools({
   getToken: async () => ({
     token: "xoxb-YOUR_BOT_TOKEN"
-  })
+  }),
+  config: {
+    channelId: "OPTIONAL_DEFAULT_CHANNEL_ID"
+  }
 });
 ```

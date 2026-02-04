@@ -1,0 +1,313 @@
+/* Globe Hero Styles - Cursor Dark Theme */
+
+.globe-hero {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 3rem 1rem 2rem;
+    max-width: 1400px;
+    margin: 0 auto;
+    min-height: auto;
+    background: transparent;
+    position: relative;
+    z-index: 1;
+    overflow: visible;
+}
+
+.globe-hero-content {
+    text-align: center;
+    max-width: 800px;
+    margin-bottom: 3rem;
+    z-index: 10;
+}
+
+.globe-hero h1 {
+    font-size: clamp(2.5rem, 7vw, 5rem);
+    font-weight: 500;
+    line-height: 1.05;
+    letter-spacing: -0.03em;
+    margin: 0 0 1.5rem 0;
+    color: var(--color-text-primary);
+}
+
+.globe-hero h1 em {
+    font-style: italic;
+    color: var(--color-accent);
+}
+
+.globe-hero .tagline {
+    font-size: 1.125rem;
+    opacity: 0.7;
+    margin: 0 0 2.5rem 0;
+    line-height: 1.8;
+    color: var(--color-text-secondary);
+    max-width: 500px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.hero-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+/* Primary Button - High Contrast Pill */
+.btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.875rem 1.75rem;
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: var(--color-bg-primary);
+    background: var(--color-text-primary);
+    border-radius: 9999px;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.btn-primary:hover {
+    background: var(--color-text-primary);
+    transform: translateY(-1px);
+}
+
+/* Secondary Button - Ghost Pill */
+.btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.875rem 1.75rem;
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: var(--color-text-primary);
+    background: transparent;
+    border: 1px solid var(--color-border);
+    border-radius: 9999px;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.btn-secondary:hover {
+    border-color: var(--color-border-hover);
+    background: color-mix(in srgb, var(--color-bg-secondary) 65%, transparent);
+}
+
+/* Globe Container */
+.globe-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    max-width: 1200px;
+    min-height: 450px;
+    padding-bottom: 2.5rem;
+}
+
+.globe-wrapper {
+    position: relative;
+    width: 450px;
+    height: 450px;
+    flex-shrink: 0;
+}
+
+@media (max-width: 768px) {
+    .globe-wrapper {
+        width: 300px;
+        height: 300px;
+    }
+
+    .globe-container {
+        min-height: 300px;
+    }
+}
+
+.globe-glow {
+    position: absolute;
+    inset: -30%;
+    background: radial-gradient(circle, rgba(246, 130, 31, 0.08) 0%, transparent 60%);
+    pointer-events: none;
+    z-index: -1;
+}
+
+[data-theme='light'] .globe-glow {
+    background: radial-gradient(circle, rgba(246, 130, 31, 0.04) 0%, transparent 60%);
+}
+
+/* Action Cards - Constrained to globe height */
+.action-cards-left,
+.action-cards-right {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    z-index: 5;
+    max-height: none;
+    overflow: visible;
+}
+
+.action-cards-left {
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.action-cards-right {
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+@media (max-width: 1024px) {
+
+    .action-cards-left,
+    .action-cards-right {
+        display: none;
+    }
+}
+
+/* Action Card - Cursor Dark Style */
+.action-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    padding: 1rem 1.25rem;
+    background: var(--color-bg-secondary);
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+    min-width: 260px;
+    max-width: 280px;
+    opacity: 0;
+    transform: translateX(var(--x-offset, 0)) translateY(var(--y-offset, 0)) scale(0.95);
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.action-card.left {
+    --x-offset: -20px;
+}
+
+.action-card.right {
+    --x-offset: 20px;
+}
+
+.action-card.visible {
+    opacity: 1;
+    transform: translateX(0) translateY(var(--y-offset, 0)) scale(1);
+}
+
+/* Subtle top accent line */
+.action-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 12px;
+    right: 12px;
+    height: 1px;
+    background: linear-gradient(to right,
+            transparent,
+            var(--card-color, #F6821F) 30%,
+            var(--card-color, #F6821F) 70%,
+            transparent);
+    opacity: 0.5;
+    border-radius: 1px;
+}
+
+.action-icon {
+    font-size: 1.25rem;
+    flex-shrink: 0;
+    opacity: 0.9;
+}
+
+.action-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.action-service {
+    display: inline-block;
+    font-size: 0.65rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--card-color, #F6821F);
+    margin-bottom: 0.3rem;
+    opacity: 0.8;
+}
+
+.action-title {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--color-text-primary);
+    margin-bottom: 0.2rem;
+}
+
+.action-description {
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.action-status {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.65rem;
+    color: var(--color-text-muted);
+    margin-top: 0.5rem;
+}
+
+.status-dot {
+    width: 5px;
+    height: 5px;
+    background: color-mix(in srgb, var(--color-accent) 35%, #4ade80);
+    border-radius: 50%;
+    animation: pulse-dot 2s ease-in-out infinite;
+}
+
+@keyframes pulse-dot {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.4;
+    }
+}
+
+/* Card appear animation */
+.action-card.visible {
+    animation: card-fade-in 0.5s ease-out forwards;
+}
+
+@keyframes card-fade-in {
+    0% {
+        opacity: 0;
+        transform: translateX(var(--x-offset, 0)) translateY(var(--y-offset, 0)) scale(0.95);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateX(0) translateY(var(--y-offset, 0)) scale(1);
+    }
+}
+
+/* Stagger delays */
+.action-card:nth-child(1) {
+    transition-delay: 0s;
+}
+
+.action-card:nth-child(2) {
+    transition-delay: 0.15s;
+}
+
+.action-card:nth-child(3) {
+    transition-delay: 0.3s;
+}

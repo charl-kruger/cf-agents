@@ -1,0 +1,185 @@
+---
+/**
+ * AnimatedHero Component
+ * A premium hero section with animated SVG and gradient styling
+ */
+
+interface Props {
+  title: string;
+  tagline: string;
+  accentWord?: string;
+}
+
+const { title, tagline, accentWord } = Astro.props;
+
+// Split title to add italic accent to specific word
+const titleParts = accentWord 
+  ? title.replace(accentWord, `<em>${accentWord}</em>`)
+  : title;
+---
+
+<div class="animated-hero">
+  <div class="hero-content">
+    <h1 set:html={titleParts} />
+    <p class="tagline">{tagline}</p>
+    <div class="actions">
+      <slot name="actions" />
+    </div>
+  </div>
+  
+  <div class="hero-visual">
+    <svg 
+      class="agent-flow-svg" 
+      viewBox="0 0 400 300" 
+      fill="none" 
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <!-- Central Hub -->
+      <circle cx="200" cy="150" r="40" fill="url(#hubGradient)" class="node-pulse" />
+      <text x="200" y="155" text-anchor="middle" fill="white" font-weight="bold" font-size="12">Agent</text>
+      
+      <!-- Google Node (Top Left) -->
+      <circle cx="80" cy="70" r="28" fill="#EA4335" opacity="0.9" />
+      <text x="80" y="75" text-anchor="middle" fill="white" font-size="10">Google</text>
+      <path class="flow-path" d="M108 85 Q140 110 165 135" stroke="#EA4335" stroke-width="2" fill="none" />
+      
+      <!-- Discord Node (Top Right) -->
+      <circle cx="320" cy="70" r="28" fill="#5865F2" opacity="0.9" />
+      <text x="320" y="75" text-anchor="middle" fill="white" font-size="10">Discord</text>
+      <path class="flow-path" d="M292 85 Q260 110 235 135" stroke="#5865F2" stroke-width="2" fill="none" />
+      
+      <!-- Slack Node (Bottom Left) -->
+      <circle cx="80" cy="230" r="28" fill="#4A154B" opacity="0.9" />
+      <text x="80" y="235" text-anchor="middle" fill="white" font-size="10">Slack</text>
+      <path class="flow-path" d="M108 215 Q140 190 165 165" stroke="#4A154B" stroke-width="2" fill="none" />
+      
+      <!-- Telegram Node (Bottom Right) -->
+      <circle cx="320" cy="230" r="28" fill="#0088cc" opacity="0.9" />
+      <text x="320" y="235" text-anchor="middle" fill="white" font-size="10">Telegram</text>
+      <path class="flow-path" d="M292 215 Q260 190 235 165" stroke="#0088cc" stroke-width="2" fill="none" />
+      
+      <!-- Gradient Definition -->
+      <defs>
+        <linearGradient id="hubGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#F6821F" />
+          <stop offset="100%" stop-color="#FBBF24" />
+        </linearGradient>
+      </defs>
+    </svg>
+  </div>
+</div>
+
+<style>
+  .animated-hero {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+    align-items: center;
+    padding: 4rem 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  
+  @media (max-width: 768px) {
+    .animated-hero {
+      grid-template-columns: 1fr;
+      text-align: center;
+    }
+    
+    .hero-visual {
+      order: -1;
+    }
+  }
+  
+  .hero-content h1 {
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    font-weight: 800;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    margin: 0 0 1.5rem 0;
+  }
+  
+  .hero-content h1 :global(em) {
+    font-style: italic;
+    color: #F6821F;
+  }
+  
+  .tagline {
+    font-size: 1.25rem;
+    opacity: 0.8;
+    margin: 0 0 2rem 0;
+    line-height: 1.6;
+  }
+  
+  .actions {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+  
+  @media (max-width: 768px) {
+    .actions {
+      justify-content: center;
+    }
+  }
+  
+  .hero-visual {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .agent-flow-svg {
+    width: 100%;
+    max-width: 400px;
+    height: auto;
+  }
+  
+  /* Animated flow paths */
+  .agent-flow-svg :global(.flow-path) {
+    stroke-dasharray: 100;
+    stroke-dashoffset: 100;
+    animation: flow-draw 2s ease-in-out infinite;
+  }
+  
+  .agent-flow-svg :global(.flow-path:nth-child(2)) {
+    animation-delay: 0.5s;
+  }
+  
+  .agent-flow-svg :global(.flow-path:nth-child(3)) {
+    animation-delay: 1s;
+  }
+  
+  .agent-flow-svg :global(.flow-path:nth-child(4)) {
+    animation-delay: 1.5s;
+  }
+  
+  @keyframes flow-draw {
+    0% {
+      stroke-dashoffset: 100;
+      opacity: 0.3;
+    }
+    50% {
+      stroke-dashoffset: 0;
+      opacity: 1;
+    }
+    100% {
+      stroke-dashoffset: -100;
+      opacity: 0.3;
+    }
+  }
+  
+  /* Pulsing hub */
+  .agent-flow-svg :global(.node-pulse) {
+    animation: pulse 2s ease-in-out infinite;
+  }
+  
+  @keyframes pulse {
+    0%, 100% {
+      filter: drop-shadow(0 0 8px rgba(246, 130, 31, 0.4));
+    }
+    50% {
+      filter: drop-shadow(0 0 20px rgba(246, 130, 31, 0.8));
+    }
+  }
+</style>

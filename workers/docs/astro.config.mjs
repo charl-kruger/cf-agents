@@ -1,14 +1,17 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
 import starlight from '@astrojs/starlight';
+import react from '@astrojs/react';
 
 import cloudflare from '@astrojs/cloudflare';
 
 // https://astro.build/config
 export default defineConfig({
     integrations: [
+        react(),
         starlight({
-            title: '@cf-agents Docs',
+            title: '@cf-agents',
+            customCss: ['./src/styles/custom.css'],
             social: [
                 { label: 'GitHub', icon: 'github', href: 'https://github.com/charl-kruger/cf-agents' }
             ],

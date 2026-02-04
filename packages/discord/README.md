@@ -17,9 +17,7 @@ A Cloudflare Agent integration package for Discord.
 }
 ```
 
-## Usage
-
-Initialize the tools with your Discord Bot Token.
+Initialize the tools with your Discord Bot Token and an optional default channel.
 
 ```typescript
 import { createDiscordTools } from "@cf-agents/discord";
@@ -27,6 +25,9 @@ import { createDiscordTools } from "@cf-agents/discord";
 const discordTools = createDiscordTools({
   getToken: async () => ({
     token: "YOUR_BOT_TOKEN"
-  })
+  }),
+  config: {
+    channelId: "OPTIONAL_DEFAULT_CHANNEL_ID"
+  }
 });
 ```

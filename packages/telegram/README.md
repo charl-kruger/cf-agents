@@ -16,9 +16,7 @@ A Cloudflare Agent integration package for Telegram.
 }
 ```
 
-## Usage
-
-Initialize the tools with your Telegram Bot Token.
+Initialize the tools with your Telegram Bot Token and an optional default chat/channel.
 
 ```typescript
 import { createTelegramTools } from "@cf-agents/telegram";
@@ -26,6 +24,9 @@ import { createTelegramTools } from "@cf-agents/telegram";
 const telegramTools = createTelegramTools({
   getToken: async () => ({
     token: "YOUR_BOT_TOKEN"
-  })
+  }),
+  config: {
+    chatId: "OPTIONAL_DEFAULT_CHAT_ID"
+  }
 });
 ```
