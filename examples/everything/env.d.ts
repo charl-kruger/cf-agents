@@ -15,6 +15,7 @@ declare namespace Cloudflare {
 		DISCORD_TOKEN: string;
 		TELEGRAM_TOKEN: string;
 		SLACK_TOKEN: string;
+		DISCORD_PUBLIC_KEY: string;
 		GEMINI_API_KEY: string;
 	}
 }

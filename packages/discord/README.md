@@ -17,20 +17,36 @@ A Cloudflare Agent integration package for Discord.
 }
 ```
 
-Initialize the tools with your Discord Bot Token and an optional default channel.
+## Configuration & Setup
+
+To use this package, you need a Discord bot and the following credentials: `DISCORD_TOKEN` and `DISCORD_PUBLIC_KEY`.
+
+### 1. Create a Discord Bot
+- Go to the [Discord Developer Portal](https://discord.com/developers/applications).
+- Click **New Application** and give it a name.
+- Under **Settings > Bot**:
+    - Click **Reset Token** (or **Copy**) to get your `DISCORD_TOKEN`.
+    - **Crucial**: Enable **Message Content Intent** under the "Privileged Gateway Intents" section.
+- Under **Settings > General Information**:
+    - Copy your **Public Key** to use as `DISCORD_PUBLIC_KEY`.
+
+### 2. Initialize Tools
+
+Initialize the tools with your credentials and an optional default channel.
 
 ```typescript
 import { createDiscordTools } from "@cf-agents/discord";
 
 const discordTools = createDiscordTools({
   getToken: async () => ({
-    token: "YOUR_BOT_TOKEN"
+    token: env.DISCORD_TOKEN // Your Bot Token
   }),
   config: {
     channelId: "OPTIONAL_DEFAULT_CHANNEL_ID"
   }
 });
-```## Two-Way Messaging (Webhooks)
+```
+## Two-Way Messaging (Webhooks)
 
 Handle incoming Discord interactions (slash commands) to trigger your agent.
 

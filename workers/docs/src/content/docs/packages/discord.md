@@ -18,12 +18,32 @@ npm install @cf-agents/discord
 
 ## Configuration
 
-1.  Create a bot on the [Discord Developer Portal](https://discord.com/developers/applications).
-2.  Get your **Bot Token**.
-3.  Invite the bot to your server ensuring it has permissions to Read Messages and Send Messages.
-4.  Enable "Message Content Intent" in the bot settings if you need to read message content.
+Follow these steps to get your Discord integration running.
+
+### 1. Create a Bot in the Discord Portal
+1.  Navigate to the [Discord Developer Portal](https://discord.com/developers/applications).
+2.  Create a **New Application**.
+3.  Go to **Settings > Bot**:
+    - Click **Reset Token** to generate your `DISCORD_TOKEN`.
+    - **Important**: Enable **Message Content Intent** under "Privileged Gateway Intents".
+4.  Go to **Settings > General Information**:
+    - Copy your **Public Key** (`DISCORD_PUBLIC_KEY`).
+5.  **Invite the Bot**: Under `OAuth2 > URL Generator`, select `bot` + `Administrator` (or specific permissions like `Send Messages`, `Read Message History`) and use the generated URL to add the bot to your server.
+
+### 2. Set Environment Variables
+Add the credentials to your `wrangler.toml` or `.dev.vars`:
+
+```toml
+[vars]
+DISCORD_TOKEN = "your_bot_token"
+DISCORD_PUBLIC_KEY = "your_public_key"
+```
 
 ## Usage
+
+### 1. Initialize Tools
+
+In your agent's tool initialization logic:
 
 ```typescript
 import { createDiscordTools } from "@cf-agents/discord";
@@ -52,9 +72,14 @@ The package exports AI SDK compatible tools. Once added to `streamText`, the LLM
 *   `discord_send_message({ channelId?, content })`
 *   `discord_read_history({ channelId?, limit })`
 
-### Two-Way Messaging (Webhooks)
+### 2. Two-Way Messaging (Webhooks)
 
-You can handle incoming Discord interactions to trigger your agent.
+To handle incoming Discord interactions (like slash commands or messages) as triggers for your agent, you need to configure a webhook endpoint.
+
+1.  **Public URL**: Ensure your Worker has a public URL (via `wrangler deploy` or a tunnel).
+2.  **Discord Portal**: In your Application settings, go to **General Information**.
+3.  **Interactions Endpoint URL**: Set this to `https://your-worker.com/webhooks/discord`.
+4.  **Verification**: Discord will send a `PONG` request to verify the URL. The `handleDiscordWebhook` helper handles this automatically.
 
 ```typescript
 import { handleDiscordWebhook } from "@cf-agents/discord";
