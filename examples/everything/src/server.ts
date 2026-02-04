@@ -24,9 +24,9 @@ import {
   getTokenFromCode,
   refreshAccessToken
 } from "@cf-agents/google";
-import { createDiscordTools } from "@cf-agents/discord";
-import { createTelegramTools } from "@cf-agents/telegram";
-import { createSlackTools } from "@cf-agents/slack";
+import { createDiscordTools, handleDiscordWebhook } from "@cf-agents/discord";
+import { createTelegramTools, handleTelegramWebhook } from "@cf-agents/telegram";
+import { createSlackTools, handleSlackWebhook } from "@cf-agents/slack";
 
 // Cloudflare AI Gateway
 // const openai = createOpenAI({
@@ -142,35 +142,8 @@ export class Chat extends AIChatAgent<Env> {
     });
     const model = google("gemini-3-flash-preview");
 
-    // Initialize Google Tools
-    const googleTools = createGoogleTools({
-      getToken: async () => this.getValidGoogleToken()
-    });
-
-    // Initialize Discord Tools
-    const discordTools = createDiscordTools({
-      getToken: async () => ({ token: this.env.DISCORD_TOKEN })
-    });
-
-    // Initialize Telegram Tools
-    const telegramTools = createTelegramTools({
-      getToken: async () => ({ token: this.env.TELEGRAM_TOKEN })
-    });
-
-    // Initialize Slack Tools
-    const slackTools = createSlackTools({
-      getToken: async () => ({ token: this.env.SLACK_TOKEN })
-    });
-
-    // Collect all tools
-    const allTools = {
-      ...tools,
-      // ...this.mcp.getAITools(),
-      ...googleTools,
-      ...discordTools,
-      ...telegramTools,
-      ...slackTools
-    };
+    // Initialize all tools
+    const allTools = await this.initializeTools();
 
     const stream = createUIMessageStream({
       execute: async ({ writer }) => {
@@ -229,6 +202,83 @@ If the user asks to schedule a task, use the schedule tool to schedule the task.
       }
     ]);
   }
+
+  /**
+   * Centralized tool initialization
+   */
+  async initializeTools() {
+    // Initialize Google Tools
+    const googleTools = createGoogleTools({
+      getToken: async () => this.getValidGoogleToken()
+    });
+
+    // Initialize Discord Tools
+    const discordTools = createDiscordTools({
+      getToken: async () => ({ token: this.env.DISCORD_TOKEN })
+    });
+
+    // Initialize Telegram Tools
+    const telegramTools = createTelegramTools({
+      getToken: async () => ({ token: this.env.TELEGRAM_TOKEN })
+    });
+
+    // Initialize Slack Tools
+    const slackTools = createSlackTools({
+      getToken: async () => ({ token: this.env.SLACK_TOKEN })
+    });
+
+    return {
+      ...tools,
+      ...googleTools,
+      ...discordTools,
+      ...telegramTools,
+      ...slackTools
+    };
+  }
+  /**
+   * Handles messages received from external services (Discord, Slack, Telegram)
+   */
+  async onInboundMessage(message: string, reply: (text: string) => Promise<void>) {
+    const google = createGoogleGenerativeAI({
+      apiKey: this.env.GEMINI_API_KEY
+    });
+    const model = google("gemini-1.5-flash");
+
+    // Initialize all tools
+    const allTools = await this.initializeTools();
+
+    // 1. Add user message to state
+    const userMessage = {
+      id: generateId(),
+      role: "user" as const,
+      parts: [{ type: "text" as const, text: message }],
+      metadata: { createdAt: new Date() }
+    };
+    await this.saveMessages([...this.messages, userMessage]);
+
+    // 2. Generate response
+    const result = streamText({
+      system: `You are a helpful assistant responding via a messaging app (Discord/Slack/Telegram).
+Be concise. You have access to Google Workspace and other tools.`,
+      messages: await convertToModelMessages(this.messages),
+      model,
+      tools: allTools,
+      maxSteps: 10,
+    });
+
+    // 3. Wait for full text and reply
+    const text = await result.text;
+    await reply(text);
+
+    // 4. Save AI message to state
+    const assistantMessage = {
+      id: generateId(),
+      role: "assistant" as const,
+      parts: [{ type: "text" as const, text }],
+      metadata: { createdAt: new Date() }
+    };
+    await this.saveMessages([...this.messages, assistantMessage]);
+  }
 }
 
 /**
@@ -237,6 +287,38 @@ If the user asks to schedule a task, use the schedule tool to schedule the task.
 export default {
   async fetch(request: Request, env: Env, _ctx: ExecutionContext) {
     const url = new URL(request.url);
+
+    // Route Webhooks
+    if (url.pathname.startsWith("/webhooks/")) {
+      const id = env.Chat.idFromName("default"); // Or extract from URL for multi-tenancy
+      const stub = env.Chat.get(id);
+      let hookResult: any = null;
+
+      if (url.pathname === "/webhooks/discord") {
+        hookResult = await handleDiscordWebhook(request, {
+          DISCORD_PUBLIC_KEY: env.DISCORD_PUBLIC_KEY,
+          DISCORD_TOKEN: env.DISCORD_TOKEN
+        });
+      } else if (url.pathname === "/webhooks/slack") {
+        hookResult = await handleSlackWebhook(request, {
+          SLACK_SIGNING_SECRET: env.SLACK_SIGNING_SECRET,
+          SLACK_TOKEN: env.SLACK_TOKEN
+        });
+      } else if (url.pathname === "/webhooks/telegram") {
+        hookResult = await handleTelegramWebhook(request, {
+          TELEGRAM_TOKEN: env.TELEGRAM_TOKEN,
+          TELEGRAM_SECRET_TOKEN: env.TELEGRAM_SECRET_TOKEN
+        });
+      }
+
+      if (hookResult instanceof Response) return hookResult;
+      if (hookResult && "message" in hookResult) {
+        // Background the agent processing to acknowledge the webhook quickly
+        _ctx.waitUntil(stub.onInboundMessage(hookResult.message, hookResult.reply));
+        return new Response("OK", { status: 200 });
+      }
+      return new Response("Not Handled", { status: 200 });
+    }
 
     if (url.pathname === "/check-api-key") {
       const hasApiKey = !!process.env.GEMINI_API_KEY;
