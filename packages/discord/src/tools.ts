@@ -27,9 +27,9 @@ export const createDiscordTools = (context: ToolContext) => {
             description: "Send a message to a Discord channel",
             parameters: z.object({
                 channelId: z.string().optional().describe("The ID of the channel to send to. Optional if a channel is pre-configured."),
-                content: z.string().describe("The message content"),
+                message: z.string().describe("The message content"),
             }),
-            execute: async ({ channelId, content }) => {
+            execute: async ({ channelId, message }) => {
                 const targetChannelId = channelId ?? context.config?.channelId;
                 if (!targetChannelId) {
                     throw new Error("No channelId provided and no default channel configured.");
@@ -39,7 +39,7 @@ export const createDiscordTools = (context: ToolContext) => {
                     `${DISCORD_API_BASE}/channels/${targetChannelId}/messages`,
                     {
                         method: "POST",
-                        body: JSON.stringify({ content }),
+                        body: JSON.stringify({ content: message }),
                     }
                 );
 
@@ -64,7 +64,8 @@ export const createDiscordTools = (context: ToolContext) => {
                     throw new Error("No channelId provided and no default channel configured.");
                 }
 
-                const params = new URLSearchParams({ limit: String(limit) });
+                const safeLimit = limit ?? 10;
+                const params = new URLSearchParams({ limit: String(safeLimit) });
                 const response = await getAuthenticatedFetch(
                     `${DISCORD_API_BASE}/channels/${targetChannelId}/messages?${params}`
                 );

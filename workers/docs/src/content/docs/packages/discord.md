@@ -69,7 +69,7 @@ You can configure the package to always use a specific Discord channel. When `ch
 
 The package exports AI SDK compatible tools. Once added to `streamText`, the LLM can call:
 
-*   `discord_send_message({ channelId?, content })`
+*   `discord_send_message({ channelId?, message })`
 *   `discord_read_history({ channelId?, limit })`
 
 ### 2. Two-Way Messaging (Webhooks)
