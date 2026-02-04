@@ -51,3 +51,27 @@ The package exports AI SDK compatible tools. Once added to `streamText`, the LLM
 
 *   `discord_send_message({ channelId?, content })`
 *   `discord_read_history({ channelId?, limit })`
+
+### Two-Way Messaging (Webhooks)
+
+You can handle incoming Discord interactions to trigger your agent.
+
+```typescript
+import { handleDiscordWebhook } from "@cf-agents/discord";
+
+export default {
+  async fetch(request, env) {
+    const result = await handleDiscordWebhook(request, {
+      DISCORD_PUBLIC_KEY: env.DISCORD_PUBLIC_KEY,
+      DISCORD_TOKEN: env.DISCORD_TOKEN
+    });
+
+    if (result && "message" in result) {
+      // result.message will contain the data from the interaction
+      await result.reply("Processing with AI agent...");
+    }
+
+    return result instanceof Response ? result : new Response("OK");
+  }
+}
+```

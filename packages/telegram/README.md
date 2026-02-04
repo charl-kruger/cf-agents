@@ -29,4 +29,21 @@ const telegramTools = createTelegramTools({
     chatId: "OPTIONAL_DEFAULT_CHAT_ID"
   }
 });
+```## Two-Way Messaging (Webhooks)
+
+Receive and respond to Telegram messages.
+
+```typescript
+import { handleTelegramWebhook } from "@cf-agents/telegram";
+
+// In your fetch handler
+const result = await handleTelegramWebhook(request, {
+  TELEGRAM_TOKEN: env.TELEGRAM_TOKEN,
+  TELEGRAM_SECRET_TOKEN: env.TELEGRAM_SECRET_TOKEN // Optional
+});
+
+if (result && "message" in result) {
+  // Process with agent and reply
+  await result.reply("Message received!");
+}
 ```

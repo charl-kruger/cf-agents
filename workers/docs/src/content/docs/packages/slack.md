@@ -53,3 +53,27 @@ The package exports AI SDK compatible tools:
 
 *   `slack_post_message({ channelId?, text })`
 *   `slack_get_channel_history({ channelId?, limit })`
+
+### Two-Way Messaging (Webhooks)
+
+Set up a Slack Events URL to receive messages directly in your agent.
+
+```typescript
+import { handleSlackWebhook } from "@cf-agents/slack";
+
+export default {
+  async fetch(request, env) {
+    const result = await handleSlackWebhook(request, {
+      SLACK_SIGNING_SECRET: env.SLACK_SIGNING_SECRET,
+      SLACK_TOKEN: env.SLACK_TOKEN
+    });
+
+    if (result && "message" in result) {
+      // result.message is the text sent by the user
+      await result.reply(`Agent received: ${result.message}`);
+    }
+
+    return result instanceof Response ? result : new Response("OK");
+  }
+}
+```

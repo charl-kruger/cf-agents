@@ -30,4 +30,21 @@ const slackTools = createSlackTools({
     channelId: "OPTIONAL_DEFAULT_CHANNEL_ID"
   }
 });
+```## Two-Way Messaging (Webhooks)
+
+Respond to Slack messages or mentions automatically.
+
+```typescript
+import { handleSlackWebhook } from "@cf-agents/slack";
+
+// In your fetch handler
+const result = await handleSlackWebhook(request, {
+  SLACK_SIGNING_SECRET: env.SLACK_SIGNING_SECRET,
+  SLACK_TOKEN: env.SLACK_TOKEN
+});
+
+if (result && "message" in result) {
+  // Process with agent and reply
+  await result.reply(`Hi! I received: ${result.message}`);
+}
 ```
