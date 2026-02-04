@@ -13,7 +13,7 @@ export default defineConfig({
         react(),
         pageMarkdown(),
         starlight({
-            title: 'CF-Agents | The Open Source Toolkit for Cloudflare Agents',
+            title: 'CF-Agents',
             customCss: ['./src/styles/custom.css'],
             social: [
                 { label: 'GitHub', icon: 'github', href: 'https://github.com/charl-kruger/cf-agents' }
