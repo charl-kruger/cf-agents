@@ -404,13 +404,15 @@ main {
    Ecosystem Showcase
    ============================================ */
 .ecosystem-showcase {
-  display: grid;
-  grid-template-columns: 1.05fr 1fr;
-  gap: 2.5rem;
-  padding: 2.5rem;
-  margin: 3rem 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 3.5rem;
+  padding: 4rem 2rem;
+  margin: 4rem 0;
   border: 1px solid var(--color-border);
-  border-radius: 18px;
+  border-radius: 24px;
   background: radial-gradient(circle at 10% 20%, var(--color-accent-subtle), transparent 35%),
     radial-gradient(circle at 90% 10%, rgba(255, 200, 120, 0.05), transparent 32%),
     radial-gradient(circle at 80% 80%, var(--color-accent-subtle), transparent 30%),
@@ -430,8 +432,10 @@ main {
 }
 
 .ecosystem-copy {
-  position: relative;
-  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 800px;
 }
 
 .ecosystem-copy h2 {
@@ -455,6 +459,7 @@ main {
 
 .pill-row {
   display: flex;
+  justify-content: center;
   gap: 0.6rem;
   flex-wrap: wrap;
 }
@@ -470,7 +475,9 @@ main {
 
 .ecosystem-visual {
   position: relative;
-  min-height: 360px;
+  width: 100%;
+  max-width: 1000px;
+  min-height: 480px;
   display: grid;
   align-items: center;
 }
@@ -480,9 +487,9 @@ main {
   position: absolute;
   inset: 0;
   border-radius: 14px;
-  border: 1px solid var(--color-shell-border);
-  background: var(--color-shell-bg);
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+  border: 1px solid #30363d;
+  background: #0d1117;
+  box-shadow: 0 30px 70px rgba(0, 0, 0, 0.25);
   overflow: hidden;
   transform: translateY(10px) scale(0.98);
   opacity: 0;
@@ -596,19 +603,23 @@ main {
 .editor-tabs {
   display: flex;
   height: 100%;
+  align-items: stretch;
 }
 
 .editor-tabs .tab {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   padding: 0 20px;
   font-size: 0.8rem;
   color: #8b949e;
   border-right: 1px solid #30363d;
+  border-top: 1px solid transparent;
   cursor: pointer;
   background: #0d1117;
   transition: all 0.2s ease;
+  height: 100%;
+  box-sizing: border-box;
 }
 
 .editor-tabs .tab:hover {
