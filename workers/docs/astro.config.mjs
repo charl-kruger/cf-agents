@@ -4,11 +4,14 @@ import starlight from '@astrojs/starlight';
 import react from '@astrojs/react';
 
 import cloudflare from '@astrojs/cloudflare';
+import pageMarkdown from '@nuasite/llm-enhancements';
 
 // https://astro.build/config
 export default defineConfig({
+    site: 'https://cf-agents.charl.dev',
     integrations: [
         react(),
+        pageMarkdown(),
         starlight({
             title: '@cf-agents',
             customCss: ['./src/styles/custom.css'],
@@ -33,6 +36,9 @@ export default defineConfig({
                     ],
                 },
             ],
+            components: {
+                PageTitle: './src/components/PageTitleOverride.astro',
+            },
         }),
     ],
 

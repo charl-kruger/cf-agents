@@ -24,6 +24,7 @@
 		"sharp": "^0.34.2"
 	},
 	"devDependencies": {
+		"@nuasite/llm-enhancements": "^0.0.97",
 		"@types/node": "^25.2.0",
 		"wrangler": "^4.62.0"
 	},

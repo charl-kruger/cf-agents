@@ -798,3 +798,125 @@ main {
     min-height: 320px;
   }
 }
+/* ============================================
+   Page Actions Dropdown
+   ============================================ */
+.page-actions-container {
+  position: relative;
+  display: inline-block;
+}
+
+.page-actions-trigger-group {
+  display: flex;
+  align-items: stretch;
+  border-radius: 4px;
+  overflow: hidden;
+  border: 1px solid var(--sl-color-hairline);
+  background: var(--sl-color-bg);
+}
+
+.page-actions-trigger {
+  display: flex;
+  align-items: center;
+  padding: 6px 12px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--sl-color-text);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  border-right: 1px solid var(--sl-color-hairline);
+  transition: background 0.2s ease;
+}
+
+.page-actions-trigger:hover {
+  background: var(--sl-color-bg-nav);
+}
+
+.page-actions-dropdown-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 8px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: var(--sl-color-text);
+  transition: background 0.2s ease;
+}
+
+.page-actions-dropdown-toggle:hover,
+.page-actions-dropdown-toggle.active {
+  background: var(--sl-color-bg-nav);
+}
+
+.page-actions-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 4px;
+  width: 280px;
+  background: var(--sl-color-bg);
+  border: 1px solid var(--sl-color-hairline);
+  border-radius: 4px;
+  box-shadow: var(--sl-shadow-md);
+  list-style: none !important;
+  padding: 4px 0 !important;
+  z-index: 1000;
+  animation: fadeInDown 0.2s ease-out;
+}
+
+.page-actions-menu li {
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.page-actions-menu button {
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  border: none;
+  padding: 8px 12px;
+  cursor: pointer;
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  transition: background 0.2s ease;
+}
+
+.page-actions-menu button:hover {
+  background: var(--sl-color-bg-nav);
+}
+
+.menu-item-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.menu-item-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--sl-color-text);
+}
+
+.menu-item-desc {
+  margin-top: 2px;
+  margin-left: 24px;
+  font-size: 0.75rem;
+  color: var(--sl-color-text-secondary);
+  line-height: 1.2;
+}
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
