@@ -59,6 +59,7 @@ const skillsTools = createSkillsTools({
 Once added to your agent's toolset, the LLM can:
 
 -   `addSkill({ url })`: Point the agent to a GitHub repo (or `owner/repo`) to learn new capabilities.
+-   `loadSkill({ skillName })`: Loads the full content and specialized instructions for a skill.
 -   `searchSkills({ query? })`: Find documentation or specific logic in already installed skills.
 -   `deleteSkill({ skillName })`: Uninstall/remove a capability.
 

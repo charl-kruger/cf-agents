@@ -73,9 +73,10 @@ export default {
 
 Once added to your agent's toolset, the LLM can call:
 
-*   **`addSkill({ url })`**: Pass a GitHub URL (e.g., `https://github.com/owner/repo`) or shorthand (`owner/repo`). The agent will scan for `SKILL.md`, download the folder contents, and index the skill.
+*   **`addSkill({ url })`**: Pass a GitHub URL (e.g., `https://github.com/owner/repo`) or shorthand (`owner/repo`). The agent will scan for `SKILL.md`, download the folder contents, and update the global manifest.
+*   **`loadSkill({ skillName })`**: Fetches the full content of a skill's `SKILL.md` file. Use this when the agent needs specific instructions for a capability it already knows about.
 *   **`searchSkills({ query? })`**: Performs a vector search over installed skills to find relevant documentation or logic.
-*   **`deleteSkill({ skillName })`**: Removes a skill's files from R2 and deletes its entry from the Vectorize index.
+*   **`deleteSkill({ skillName })`**: Removes a skill's files from R2 and deletes its entry from the manifest and index.
 
 ## Creating Your Own Skill
 

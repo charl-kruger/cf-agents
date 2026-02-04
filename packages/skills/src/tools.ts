@@ -15,8 +15,22 @@ export interface SkillContext {
 }
 
 /**
- * Helper to parse GitHub URL into owner, repo, branch, path
+ * Metadata for a single skill in the manifest
  */
+export interface SkillMetadata {
+    name: string;
+    summary: string;
+    url: string;
+    path: string;
+    installedAt: string;
+}
+
+/**
+ * Global manifest of all installed skills
+ */
+export interface SkillManifest {
+    skills: SkillMetadata[];
+}
 function parseGithubUrl(url: string) {
     try {
         const u = new URL(url);
@@ -68,7 +82,27 @@ async function fetchGithubTree(owner: string, repo: string, branch: string) {
     return data.tree;
 }
 
+/**
+ * Helpers for manifest management
+ */
+export const manifestHelpers = (context: SkillContext) => ({
+    getManifest: async (): Promise<SkillManifest> => {
+        try {
+            const obj = await context.FILES.get("skills/manifest.json");
+            if (!obj) return { skills: [] };
+            return JSON.parse(await obj.text());
+        } catch {
+            return { skills: [] };
+        }
+    },
+    saveManifest: async (manifest: SkillManifest) => {
+        await context.FILES.put("skills/manifest.json", JSON.stringify(manifest, null, 2));
+    }
+});
+
 export const createSkillsTools = (context: SkillContext) => {
+    const manifest = manifestHelpers(context);
+
     return {
         addSkill: tool({
             description: "Adds a capability/skill from GitHub repositories by discovering SKILL.md files.",
@@ -173,6 +207,18 @@ export const createSkillsTools = (context: SkillContext) => {
                         }
                     ]);
 
+                    // Sync Manifest
+                    const currentManifest = await manifest.getManifest();
+                    const filtered = currentManifest.skills.filter(s => s.name !== skillName);
+                    filtered.push({
+                        name: skillName,
+                        summary: skillDescription.split("\n")[0].replace(/^#+\s*/, "") || skillName,
+                        url,
+                        path: skillFolderPath,
+                        installedAt: new Date().toISOString()
+                    });
+                    await manifest.saveManifest({ skills: filtered });
+
                     return `Successfully installed skill: ${skillName}`;
                 } catch (error: any) {
                     return `Failed to install skill: ${error.message}`;
@@ -201,6 +247,12 @@ export const createSkillsTools = (context: SkillContext) => {
                         cursor = list.truncated ? list.cursor : undefined;
                     } while (cursor);
 
+                    // Sync Manifest
+                    const currentManifest = await manifest.getManifest();
+                    await manifest.saveManifest({
+                        skills: currentManifest.skills.filter(s => s.name !== skillName)
+                    });
+
                     return `Successfully deleted skill '${skillName}'.`;
                 } catch (error: any) {
                     return `Failed to delete skill: ${error.message}`;
@@ -209,7 +261,7 @@ export const createSkillsTools = (context: SkillContext) => {
         }),
 
         searchSkills: tool({
-            description: "Search for locally installed skills and their documentation.",
+            description: "Search for locally installed skills and their documentation using vector search.",
             parameters: z.object({
                 query: z.string().optional().describe("The search query. If omitted, lists available skills.")
             }),
@@ -233,6 +285,18 @@ export const createSkillsTools = (context: SkillContext) => {
                 return matches.matches
                     .map((m) => `Skill: ${m.id}\nDescription: ${(m.metadata as any)?.description || "No description"}`)
                     .join("\n\n");
+            }
+        }),
+
+        loadSkill: tool({
+            description: "Loads the full documentation and instructions for a specific installed skill.",
+            parameters: z.object({
+                skillName: z.string().describe("The name of the skill to load.")
+            }),
+            execute: async ({ skillName }) => {
+                const file = await context.FILES.get(`skills/${skillName}/SKILL.md`);
+                if (!file) return `Error: Skill '${skillName}' not found.`;
+                return await file.text();
             }
         })
     };
