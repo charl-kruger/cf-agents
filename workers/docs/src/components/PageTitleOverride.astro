@@ -35,3 +35,24 @@ import PageActions from "./PageActions";
     }
   }
 </style>
+
+<script is:inline>
+  // Ensure all external links (like GitHub in social nav) open in a new tab
+  document.addEventListener('DOMContentLoaded', () => {
+    const handleExternalLinks = () => {
+      const links = document.querySelectorAll('a[href^="http"]');
+      links.forEach(link => {
+        const url = new URL(link.href);
+        if (url.origin !== window.location.origin) {
+          link.setAttribute('target', '_blank');
+          link.setAttribute('rel', 'noopener noreferrer');
+        }
+      });
+    };
+
+    handleExternalLinks();
+    // Re-run if Starlight dynamic nav happens
+    const observer = new MutationObserver(handleExternalLinks);
+    observer.observe(document.body, { childList: true, subtree: true });
+  });
+</script>

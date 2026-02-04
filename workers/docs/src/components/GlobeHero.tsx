@@ -289,7 +289,7 @@ export default function GlobeHero() {
                     <a href="/guides/getting-started" className="btn-primary">
                         Get Started →
                     </a>
-                    <a href="https://github.com/charl-kruger/cf-agents" className="btn-secondary">
+                    <a href="https://github.com/charl-kruger/cf-agents" className="btn-secondary" target="_blank" rel="noopener noreferrer">
                         View on GitHub
                     </a>
                 </div>
