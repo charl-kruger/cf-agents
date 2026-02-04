@@ -100,3 +100,27 @@ export default {
   }
 }
 ```
+### 3. Registering Commands
+
+Discord needs to know what commands your bot supports. You can register a global `/chat` command using this `curl` command:
+
+```bash
+curl -X POST \
+  -H "Authorization: Bot YOUR_DISCORD_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "chat",
+    "description": "Talk to the AI Agent",
+    "options": [
+      {
+        "name": "message",
+        "description": "The message to send",
+        "type": 3,
+        "required": true
+      }
+    ]
+  }' \
+  "https://discord.com/api/v10/applications/YOUR_APPLICATION_ID/commands"
+```
+
+Replace `YOUR_DISCORD_TOKEN` and `YOUR_APPLICATION_ID` with the values from your Discord portal.

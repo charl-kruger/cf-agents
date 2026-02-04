@@ -64,3 +64,18 @@ if (result && "message" in result) {
   await result.reply("Processing your request...");
 }
 ```
+### 3. Registering Slash Commands
+
+To test inbound messages, you need to register a command in your Discord Application. Run this `curl` command once (replace placeholders):
+
+```bash
+curl -X POST \
+  -H "Authorization: Bot YOUR_DISCORD_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "chat",
+    "description": "Talk to the AI Agent",
+    "options": [{"name": "message", "description": "The message to send", "type": 3, "required": true}]
+  }' \
+  "https://discord.com/api/v10/applications/YOUR_APPLICATION_ID/commands"
+```
