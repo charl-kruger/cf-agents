@@ -12,6 +12,8 @@ export interface SkillContext {
     FILES: R2Bucket;
     /** Cloudflare Vectorize binding for skill indexing */
     VECTOR_INDEX: VectorizeIndex;
+    /** Optional GitHub Personal Access Token for higher rate limits and private repos */
+    githubToken?: string;
 }
 
 /**
@@ -64,17 +66,25 @@ function parseGithubUrl(url: string) {
 /**
  * Fetch the entire repository tree recursively using GitHub Git Trees API
  */
-async function fetchGithubTree(owner: string, repo: string, branch: string) {
+/**
+ * Fetch the entire repository tree recursively using GitHub Git Trees API
+ */
+async function fetchGithubTree(owner: string, repo: string, branch: string, token?: string) {
     const apiUrl = `https://api.github.com/repos/${owner}/${repo}/git/trees/${branch}?recursive=1`;
-    const res = await fetch(apiUrl, {
-        headers: {
-            "User-Agent": "cf-agents-skills-package"
-        }
-    });
+    const headers: Record<string, string> = {
+        "User-Agent": "cf-agents-skills-package",
+        "Accept": "application/vnd.github.v3+json"
+    };
+
+    if (token) {
+        headers["Authorization"] = `token ${token}`;
+    }
+
+    const res = await fetch(apiUrl, { headers });
     if (!res.ok) {
         if (res.status === 404 && branch === "main") {
             // Try 'master' if 'main' fails
-            return fetchGithubTree(owner, repo, "master");
+            return fetchGithubTree(owner, repo, "master", token);
         }
         throw new Error(`GitHub API Error: ${res.status} ${res.statusText}`);
     }
@@ -125,7 +135,7 @@ export const createSkillsTools = (context: SkillContext) => {
                 const { owner, repo, branch, path: requestedPath } = parsed;
 
                 try {
-                    const tree = await fetchGithubTree(owner, repo, branch);
+                    const tree = await fetchGithubTree(owner, repo, branch, context.githubToken);
                     const skillMarkers = tree.filter(node => node.path.endsWith("/SKILL.md") || node.path === "SKILL.md");
 
                     if (skillMarkers.length === 0) {
@@ -166,15 +176,28 @@ export const createSkillsTools = (context: SkillContext) => {
 
                     let skillDescription = "";
                     let foundSkillMd = false;
+                    const downloadedFiles: string[] = [];
 
                     for (const fileNode of filesToDownload) {
                         const fileName = skillFolderPath === "" ? fileNode.path : fileNode.path.replace(skillFolderPath + "/", "");
-                        const downloadUrl = `https://raw.githubusercontent.com/${owner}/${repo}/${branch}/${fileNode.path}`;
-                        const contentRes = await fetch(downloadUrl);
+
+                        // Use GitHub API for downloads to support private repos consistently
+                        const downloadUrl = `https://api.github.com/repos/${owner}/${repo}/contents/${fileNode.path}?ref=${branch}`;
+                        const headers: Record<string, string> = {
+                            "User-Agent": "cf-agents-skills-package",
+                            "Accept": "application/vnd.github.v3.raw"
+                        };
+                        if (context.githubToken) {
+                            headers["Authorization"] = `token ${context.githubToken}`;
+                        }
+
+                        const contentRes = await fetch(downloadUrl, { headers });
                         if (!contentRes.ok) continue;
 
                         const content = await contentRes.text();
-                        await context.FILES.put(`skills/${skillName}/${fileName}`, content);
+                        const key = `skills/${skillName}/${fileName}`;
+                        await context.FILES.put(key, content);
+                        downloadedFiles.push(key);
 
                         if (fileName === "SKILL.md") {
                             foundSkillMd = true;
@@ -183,7 +206,11 @@ export const createSkillsTools = (context: SkillContext) => {
                     }
 
                     if (!foundSkillMd) {
-                        return `Error: Failed to download SKILL.md for ${skillName}`;
+                        // Rollback downloaded files if SKILL.md missing
+                        for (const key of downloadedFiles) {
+                            await context.FILES.delete(key);
+                        }
+                        return `Error: Failed to download healthy SKILL.md for ${skillName}`;
                     }
 
                     // Vector Embed & Index

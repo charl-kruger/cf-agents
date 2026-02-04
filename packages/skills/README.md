@@ -50,9 +50,13 @@ import { createSkillsTools } from "@cf-agents/skills";
 const skillsTools = createSkillsTools({
   AI: env.AI,
   FILES: env.FILES, // Your R2 bucket
-  VECTOR_INDEX: env.VECTOR_INDEX
+  VECTOR_INDEX: env.VECTOR_INDEX,
+  githubToken: env.GITHUB_TOKEN // Optional: for private repos & higher rate limits
 });
 ```
+
+> [!TIP]
+> Always store your `GITHUB_TOKEN` as a secret (e.g., in `.dev.vars` locally or via `wrangler secret put` in production).
 
 ## Usage
 
