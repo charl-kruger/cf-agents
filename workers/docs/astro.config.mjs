@@ -33,6 +33,7 @@ export default defineConfig({
                         { label: 'Telegram', slug: 'packages/telegram' },
                         { label: 'Slack', slug: 'packages/slack' },
                         { label: 'Agent Skills', slug: 'packages/skills' },
+                        { label: 'Dynamic Workers', slug: 'packages/dynamic-workers' },
                     ],
                 },
             ],
