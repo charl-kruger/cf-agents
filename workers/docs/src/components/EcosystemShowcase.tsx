@@ -156,10 +156,10 @@ export default function EcosystemShowcase() {
     <section className="ecosystem-showcase">
       <div className="ecosystem-copy">
         <p className="eyebrow">The @cf-agents Ecosystem</p>
-        <h2>Connect and ship in minutes.</h2>
+        <h2>Integration shouldn't be a side-quest.</h2>
         <p className="lede">
-          Watch the flow from install to production. Drop in a package, then use it in your Worker
-          without wiring a thing.
+          Your agent has work to do. We’ve automated the boilerplate so you can skip the plumbing
+          and move straight to the logic. Turn integration hell into a minor configuration detail.
         </p>
         <div className="pill-row">
           <span className="pill">Cloudflare-native</span>
