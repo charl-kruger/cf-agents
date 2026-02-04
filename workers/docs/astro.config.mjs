@@ -32,7 +32,6 @@ export default defineConfig({
                         { label: 'Discord', slug: 'packages/discord' },
                         { label: 'Telegram', slug: 'packages/telegram' },
                         { label: 'Slack', slug: 'packages/slack' },
-                        { label: 'LLM Enhancements', slug: 'packages/llm-enhancements' },
                         { label: 'Agent Skills', slug: 'packages/skills' },
                     ],
                 },
