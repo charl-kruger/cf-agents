@@ -18,50 +18,61 @@ const TERMINAL_SCRIPT: Array<TerminalLine & { delay: number }> = [
   { text: '✨ Ready to use in your Worker', kind: 'success', delay: 620 },
 ];
 
-const CODE_SNIPPET = [
+const WORKER_CODE = [
   'import { AgentRuntime } from "@cf-agents/core";',
   'import { gmailTool } from "@cf-agents/google";',
   '',
-  'const runtime = new AgentRuntime({',
-  '  tools: [gmailTool()],',
-  '});',
-  '',
   'export default {',
-  '  async fetch(request: Request) {',
-  "    const result = await runtime.run({",
-  "      messages: [{ role: 'user', content: 'Send a status email' }],",
+  '  async fetch(request: Request, env: Env) {',
+  '    const runtime = new AgentRuntime({',
+  '      tools: [gmailTool({ token: env.GOOGLE_TOKEN })]',
   '    });',
   '',
-  '    return Response.json(result.completions);',
+  '    const result = await runtime.run({',
+  "      messages: [{ role: 'user', content: 'What is on my calendar?' }]",
+  '    });',
+  '',
+  '    return Response.json(result.responses);',
   '  },',
   '};',
 ];
 
+const ENV_CODE = [
+  'interface Env {',
+  '  /** Google OAuth Token */',
+  '  GOOGLE_TOKEN: string;',
+  '',
+  '  /** Discord Bot Token */',
+  '  DISCORD_TOKEN: string;',
+  '',
+  '  /** Chat Durable Object */',
+  '  Chat: DurableObjectNamespace;',
+  '}',
+];
+
 const KEYWORDS = new Set([
-  'import',
-  'from',
-  'const',
-  'export',
-  'default',
-  'async',
-  'await',
-  'return',
-  'new',
+  'import', 'from', 'const', 'export', 'default', 'async', 'await',
+  'return', 'new', 'interface', 'string', 'type'
 ]);
 
 function tokenizeLine(line: string): Token[] {
   if (line.trim().length === 0) return [{ text: line, kind: 'ws' }];
 
-  // Very small TS/JS-ish tokenizer for a “code editor” feel.
   const tokens: Token[] = [];
-
-  // Handle inline comments.
   const commentIdx = line.indexOf('//');
-  const codePart = commentIdx >= 0 ? line.slice(0, commentIdx) : line;
-  const commentPart = commentIdx >= 0 ? line.slice(commentIdx) : '';
+  const jsDocIdx = line.indexOf('/**');
+  const blockCommentIdx = line.indexOf('*/');
 
-  const re =
-    /(\s+|"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|`(?:\\.|[^`\\])*`|\b[A-Za-z_]\w*\b|\d+(?:\.\d+)?|[()[\]{}.,;:]|=>|==|===|!=|!==|\+|-|\*|\/|<|>)/g;
+  if (jsDocIdx >= 0 || jsDocIdx >= 0 || blockCommentIdx >= 0) {
+    // Simple handling for Doc comments
+    return [{ text: line, kind: 'comment' }];
+  }
+
+  const commentStart = line.indexOf('//');
+  const codePart = commentStart >= 0 ? line.slice(0, commentStart) : line;
+  const commentPart = commentStart >= 0 ? line.slice(commentStart) : '';
+
+  const re = /(\s+|"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|`(?:\\.|[^`\\])*`|\b[A-Za-z_]\w*\b|\d+(?:\.\d+)?|[()[\]{}.,;:]|=>|==|===|!=|!==|\+|-|\*|\/|<|>)/g;
 
   let last = 0;
   for (const match of codePart.matchAll(re)) {
@@ -88,6 +99,7 @@ function tokenizeLine(line: string): Token[] {
 
 export default function EcosystemShowcase() {
   const [stage, setStage] = useState<Stage>('terminal');
+  const [activeTab, setActiveTab] = useState<'worker' | 'env'>('worker');
   const [lines, setLines] = useState<TerminalLine[]>([]);
 
   useEffect(() => {
@@ -96,6 +108,7 @@ export default function EcosystemShowcase() {
     const runSequence = () => {
       setStage('terminal');
       setLines([]);
+      setActiveTab('worker');
 
       let cumulative = 0;
       TERMINAL_SCRIPT.forEach((line) => {
@@ -108,12 +121,19 @@ export default function EcosystemShowcase() {
       });
 
       const showEditorAt = cumulative + 900;
-      const restartAt = showEditorAt + 5200;
+      const switchTabAt = showEditorAt + 3500;
+      const restartAt = showEditorAt + 7500;
 
       timeouts.push(
         setTimeout(() => {
           setStage('editor');
         }, showEditorAt),
+      );
+
+      timeouts.push(
+        setTimeout(() => {
+          setActiveTab('env');
+        }, switchTabAt),
       );
 
       timeouts.push(
@@ -130,11 +150,13 @@ export default function EcosystemShowcase() {
     };
   }, []);
 
+  const currentCode = activeTab === 'worker' ? WORKER_CODE : ENV_CODE;
+
   return (
     <section className="ecosystem-showcase">
       <div className="ecosystem-copy">
         <p className="eyebrow">The @cf-agents Ecosystem</p>
-        <h2>Install, connect, and ship in minutes.</h2>
+        <h2>Connect and ship in minutes.</h2>
         <p className="lede">
           Watch the flow from install to production. Drop in a package, then use it in your Worker
           without wiring a thing.
@@ -174,41 +196,74 @@ export default function EcosystemShowcase() {
               <span className="editor-dot" />
               <span className="editor-dot" />
             </div>
-            <div className="tab active">worker.ts</div>
-            <div className="tab muted">env.d.ts</div>
-            <div className="editor-spacer" />
-            <div className="editor-badge">TypeScript</div>
-          </div>
-          <div className="editor-body">
-            {CODE_SNIPPET.map((line, idx) => (
-              <div className={`code-line ${idx === 8 ? 'active' : ''}`} key={`${idx}-${line}`}>
-                <span className="line-number">{idx + 1}</span>
-                <span className="code-text">
-                  {tokenizeLine(line).map((t, i) => (
-                    <span className={`tok ${t.kind}`} key={`${idx}-${i}-${t.kind}`}>
-                      {t.text}
-                    </span>
-                  ))}
-                  {idx === 8 ? <span className="ecosystem-caret" /> : null}
-                </span>
+            <div className="editor-tabs">
+              <div className={`tab ${activeTab === 'worker' ? 'active' : ''}`} onClick={() => setActiveTab('worker')}>
+                <span className="file-icon ts">TS</span>
+                worker.ts
               </div>
-            ))}
+              <div className={`tab ${activeTab === 'env' ? 'active' : ''}`} onClick={() => setActiveTab('env')}>
+                <span className="file-icon ts">TS</span>
+                env.d.ts
+              </div>
+            </div>
+            <div className="editor-spacer" />
           </div>
+
+          <div className="editor-layout">
+            <div className="editor-sidebar">
+              <div className="sidebar-icon active">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path></svg>
+              </div>
+              <div className="sidebar-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8"></circle><path d="M21 21l-4.35-4.35"></path></svg>
+              </div>
+              <div className="sidebar-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 2v20m10-10H2"></path></svg>
+              </div>
+            </div>
+
+            <div className="editor-main">
+              <div className="editor-breadcrumbs">
+                src <span className="sep">/</span> {activeTab === 'worker' ? 'worker.ts' : 'env.d.ts'}
+              </div>
+              <div className="editor-body">
+                <div className="line-gutter">
+                  {currentCode.map((_, i) => (
+                    <div key={i} className="line-number">{i + 1}</div>
+                  ))}
+                </div>
+                <div className="code-content">
+                  {currentCode.map((line, idx) => (
+                    <div className={`code-line ${activeTab === 'worker' && idx === 6 ? 'highlight' : ''}`} key={`${activeTab}-${idx}`}>
+                      <span className="code-text">
+                        {tokenizeLine(line).map((t, i) => (
+                          <span className={`tok ${t.kind}`} key={`${idx}-${i}-${t.kind}`}>
+                            {t.text}
+                          </span>
+                        ))}
+                        {activeTab === 'worker' && idx === 6 && <span className="ecosystem-caret" />}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+
           <div className="editor-status">
-            <span className="status-item">main</span>
-            <span className="status-sep" />
-            <span className="status-item">Workers</span>
+            <span className="status-item">main*</span>
             <span className="status-sep" />
             <span className="status-item">UTF-8</span>
+            <span className="status-sep" />
+            <span className="status-item">TypeScript JSX</span>
           </div>
         </div>
 
         <div className="stage-indicators">
           <span className={`dot ${stage === 'terminal' ? 'on' : ''}`}>Install</span>
-          <span className={`dot ${stage === 'editor' ? 'on' : ''}`}>Wire up</span>
+          <span className={`dot ${stage === 'editor' ? 'on' : ''}`}>Ship</span>
         </div>
       </div>
     </section>
   );
 }
-
