@@ -597,13 +597,15 @@ main {
   height: 38px;
   padding: 0 12px;
   display: flex;
-  align-items: center;
+  align-items: flex-end;
+  /* Align tabs to bottom */
 }
 
 .editor-tabs {
   display: flex;
-  height: 100%;
-  align-items: stretch;
+  height: 34px;
+  /* Slightly shorter than chrome to show hierarchy */
+  align-items: flex-end;
 }
 
 .editor-tabs .tab {
@@ -614,7 +616,8 @@ main {
   font-size: 0.8rem;
   color: #8b949e;
   border-right: 1px solid #30363d;
-  border-top: 1px solid transparent;
+  border-top: 2px solid transparent;
+  /* Consistent border for alignment */
   cursor: pointer;
   background: #0d1117;
   transition: all 0.2s ease;
@@ -629,19 +632,22 @@ main {
 .editor-tabs .tab.active {
   background: #0d1117;
   color: #c9d1d9;
-  border-top: 1px solid var(--color-accent);
+  border-top-color: var(--color-accent);
 }
 
 .file-icon.ts {
   color: #3178c6;
   font-weight: 800;
   font-size: 0.65rem;
+  display: inline-flex;
 }
 
 .editor-layout {
   flex: 1;
   display: flex;
   overflow: hidden;
+  text-align: left;
+  /* Ensure left alignment */
 }
 
 .editor-sidebar {
@@ -670,6 +676,7 @@ main {
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  text-align: left;
 }
 
 .editor-breadcrumbs {
@@ -678,6 +685,7 @@ main {
   color: #8b949e;
   background: #0d1117;
   border-bottom: 1px solid #21262d;
+  text-align: left;
 }
 
 .editor-breadcrumbs .sep {
@@ -690,6 +698,7 @@ main {
   display: flex;
   padding: 0;
   font-family: 'JetBrains Mono', 'Fira Code', Menlo, monospace;
+  text-align: left;
 }
 
 .line-gutter {
@@ -700,7 +709,8 @@ main {
   padding: 1rem 0;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 2px;
+  /* Tightened */
   user-select: none;
 }
 
@@ -708,6 +718,8 @@ main {
   padding-right: 12px;
   font-size: 0.75rem;
   color: #484f58;
+  line-height: 1.4;
+  /* Reduced line height */
 }
 
 .code-content {
@@ -716,15 +728,19 @@ main {
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 2px;
+  /* Tightened */
+  text-align: left;
 }
 
 .code-line {
   padding: 0 16px;
   white-space: pre;
   font-size: 0.85rem;
-  line-height: normal;
+  line-height: 1.4;
+  /* Reduced line height */
   transition: background 0.3s ease;
+  text-align: left;
 }
 
 .code-line.highlight {
